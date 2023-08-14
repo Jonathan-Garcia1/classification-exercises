@@ -1,10 +1,10 @@
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
-from acquire import get_titanic_data
-from acquire import get_iris_data
+from acquire import get_titanic_data, get_iris_data, get_telco_data
 
-def drop_cols(df):
+
+def drop_cols_titanic(df):
     
     return df.drop(columns = ['pclass', 'passenger_id', 'embarked', 'deck'])
 
@@ -43,7 +43,7 @@ def titanic_pipeline():
     
     df = get_titanic_data()
     
-    df = drop_cols(df)
+    df = drop_cols_titanic(df)
     
     train, val, test = train_val_test(df, 'survived')
     
@@ -62,4 +62,19 @@ def iris_pipeline():
 
     df = prep_iris()
     train, val, test = train_val_test(df, 'species')
+    return train, val, test
+
+def drop_telco(df):
+    return df.drop(columns = ['payment_type_id', 'internet_service_type_id', 'contract_type_id', 'customer_id'])
+
+def telco_train_val_test(df, strat, seed = 42):
+
+    train, val_test = train_test_split(df, train_size = 0.7,
+                                       random_state = seed,
+                                       stratify = df[strat])
+    
+    val, test = train_test_split(val_test, train_size = 0.5,
+                                 random_state = seed,
+                                 stratify = val_test[strat])
+    
     return train, val, test
